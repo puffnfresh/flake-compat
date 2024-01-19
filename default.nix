@@ -5,7 +5,10 @@
 # containing 'defaultNix' (to be used in 'default.nix'), 'shellNix'
 # (to be used in 'shell.nix').
 
-{ src, system ? builtins.currentSystem or "unknown-system" }:
+{ src
+, system ? builtins.currentSystem or "unknown-system"
+, nodeOverrides ? {}
+}:
 
 let
 
@@ -199,7 +202,7 @@ let
           else
             sourceInfo
       )
-      lockFile.nodes;
+      lockFile.nodes // nodeOverrides;
 
   result =
     if !(builtins.pathExists lockFilePath)
