@@ -224,15 +224,22 @@ let
     then allNodes.${lockFile.root}
     else throw "lock file '${lockFilePath}' has unsupported version ${toString lockFile.version}";
 
+  addDefault = single: multiple: attrs:
+    attrs
+      // (if result ? ${single}.${system} then { default = result.${single}.${system}; } else {})
+      // (if result ? ${multiple}.${system}.default then { default = result.${multiple}.${system}.default; } else {});
+
 in
   rec {
     defaultNix =
-      (builtins.removeAttrs result ["__functor"])
-      // (if result ? defaultPackage.${system} then { default = result.defaultPackage.${system}; } else {})
-      // (if result ? packages.${system}.default then { default = result.packages.${system}.default; } else {});
+      addDefault
+        "defaultPackage"
+        "packages"
+        (builtins.removeAttrs result ["__functor"]);
 
     shellNix =
-      defaultNix
-      // (if result ? devShell.${system} then { default = result.devShell.${system}; } else {})
-      // (if result ? devShells.${system}.default then { default = result.devShells.${system}.default; } else {});
+      addDefault
+        "devShell"
+        "devShells"
+        defaultNix;
   }
