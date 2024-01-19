@@ -6,13 +6,14 @@
 # (to be used in 'shell.nix').
 
 { src
+, dir ? "" 
 , system ? builtins.currentSystem or "unknown-system"
 , nodeOverrides ? {}
 }:
 
 let
 
-  lockFilePath = src + "/flake.lock";
+  lockFilePath = src + (if dir != "" then "/" + dir else "") + "/flake.lock";
 
   lockFile = builtins.fromJSON (builtins.readFile lockFilePath);
 
@@ -149,7 +150,7 @@ let
             then rootSrc
             else fetchTree (node.info or {} // removeAttrs node.locked ["dir"]);
 
-          subdir = if key == lockFile.root then "" else node.locked.dir or "";
+          subdir = if key == lockFile.root then dir else node.locked.dir or "";
 
           outPath = sourceInfo + ((if subdir == "" then "" else "/") + subdir);
 
