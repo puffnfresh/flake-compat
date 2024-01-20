@@ -219,6 +219,10 @@ let
 
 in
   rec {
+    inherit
+      allNodes
+      result;
+
     defaultNix =
       addDefault
         "defaultPackage"
